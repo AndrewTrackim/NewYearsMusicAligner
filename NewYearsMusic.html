@@ -1,10 +1,117 @@
 <!doctype html>
 <html>
-<head>
-	<meta charset="utf-8">
-	<title>New Years Giorno's Theme</title>
-</head>
-
-<body>
-</body>
+	<head>
+		<meta charset="utf-8">
+		<title>New Years Giorno's Theme</title>
+	</head>
+	
+	<body>
+		<div class="audio">
+			<audio id="song">
+				<source src="song.mp3" type="audio/ogg">
+			</audio>
+			<audio id="dramatic">
+				<source src="dramatic.mp3" type="audio/ogg">
+			</audio>
+			
+		</div>
+		
+		<div class= "introduction"> 
+		<h1>New Years Giorno's Theme Alligner</h1>
+		<br>
+		
+		<p> This website will allow you to allign the epic part of Giorno's theme with new years without the stress of figuring out when to press play!<br> all you need to do is enter the time left in the countdown and then enter the timestamp in the song that should be alligned. It's that simple!<br>I understand this website is ugly as fudge but I'm lazy and don't feel like relearining css and html styling. It functions, isn't that good enough for you?! ... geez</p>
+			
+		<br>
+			<marquee scrollamount="20">This is here because every crappy website needs scrolling text at some point.</marquee>
+		</div>
+		
+		<div class="userInput">
+		<label for="dramaticCheck">Use dramatic version</label>
+		<input type="checkbox" name="checkDramatic" id="dramaticCheck" value="dramatic"/>
+		<label for="remaining"><br>Time Remaining (MM:SS OR SSS):</label>
+		<input value="4:00" type="text" name="txtTimeRemaining" id="remaining"/>
+			
+		<!--<label for="timestamp"><br>Timestamp to allign to (keep 3:46 for Giorno's Theme):</label>
+		<input type="text" name="txtTimestamp" id="timestamp" value="3:46"/> <br>-->
+			
+		<br><button onClick="runCountdown()">Start</button>
+		<p>Tip: don't press start until the countdown changes to the desired second(aka don't try to click early to get it right on the second)</p>
+		<br><h3 id="testOutput"></h3>
+			
+		<script>
+			function runCountdown() {
+				// convert given times to seconds
+				var remaining = document.getElementById("remaining").value;
+				//var timestamp = document.getElementById("timestamp").value;
+				//document.getElementById("testOutput").innerHTML = remaining;
+				
+				var remainingSec = calculateSeconds(remaining, "remaining");
+				//var timestampSec = calculateSeconds(timestamp, "timestamp");
+				
+				if (document.getElementById("dramaticCheck").checked) {
+					var timestampSec = 100;
+				} else {
+					var timestampSec = 226;	
+				}
+				
+				//do the thing
+				waitToPlay(remainingSec, timestampSec);
+				
+			}
+			
+			function calculateSeconds(strTime, id) {
+				var intTime = 0;
+				// get rid of any spaces entered by accident
+				while(strTime.includes(" ")) {
+					strTime = strTime.replace(" ", "");
+				}
+				// update the value to remove spaces
+				document.getElementById(id).value = strTime;
+				
+				// check if they included minutes
+				// calculate time
+				if (strTime.includes(":")) {
+					intTime = parseInt(strTime.substring(0,strTime.indexOf(":"))) * 60;
+					intTime += parseInt(strTime.substring(strTime.indexOf(":") + 1, strTime.length));
+						
+				} else {
+					intTime = parseInt(strTime);
+				}
+				
+				return intTime;
+			}
+			
+			function waitToPlay(timeRemaining, timestamp) {
+				timeRemaining = parseInt(timeRemaining);
+				timestamp = parseInt(timestamp);
+				//document.getElementById("testOutput").innerHTML = (timeRemaining > timestamp);
+				if (timeRemaining > timestamp) {
+					var waitTime = (timeRemaining - timestamp) * 1000 - 500;
+					document.getElementById("testOutput").innerHTML = "Waiting " + waitTime / 1000 + " seconds to start.";
+					setTimeout(function() {
+						playMusic(0);
+					}, waitTime);
+				} else {
+					var startTime = timestamp - timeRemaining;
+					document.getElementById("testOutput").innerHTML = startTime;
+					playMusic(startTime + .5);
+				}
+			}
+			
+			function playMusic(startTime) {
+				document.getElementById("testOutput").innerHTML = "Now Playing";
+				if (document.getElementById("dramaticCheck").checked) {
+					var song = document.getElementById("dramatic");
+				} else {
+					var song = document.getElementById("song");
+				}
+				song.currentTime = startTime;
+				song.play();
+			}
+			
+		</script>
+		</div>
+		
+	</body>
 </html>
