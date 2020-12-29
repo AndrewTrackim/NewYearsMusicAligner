@@ -8,10 +8,13 @@
 	<body>
 		<div class="audio">
 			<audio id="song">
-				<source src="song.mp3" type="audio/ogg">
+				<source src="https://drive.google.com/uc?export=download&id=1wEYlJxGe370NlhQhvQmviUVSVsOGi8NM" type="audio/ogg">
 			</audio>
 			<audio id="dramatic">
-				<source src="dramatic.mp3" type="audio/ogg">
+				<source src="https://drive.google.com/uc?export=download&id=171f9b-ey_bYkR6LHltO6rAJiEIvdFYLD" type="audio/ogg">
+			</audio>
+			<audio id="custom">
+				<source src="" type="audio/ogg">
 			</audio>
 			
 		</div>
@@ -32,18 +35,32 @@
 		<label for="remaining"><br>Time Remaining (MM:SS OR SSS):</label>
 		<input value="4:00" type="text" name="txtTimeRemaining" id="remaining"/>
 			
-		<!--<label for="timestamp"><br>Timestamp to allign to (keep 3:46 for Giorno's Theme):</label>
-		<input type="text" name="txtTimestamp" id="timestamp" value="3:46"/> <br>-->
-			
-		<br><button onClick="runCountdown()">Start</button>
+		<!-- <br>-->
+		<h3>Add your own song!</h3>
+		<label for="customCheck">Use custom song</label>
+		<input type="checkbox" name="checkCustom" id="customCheck" value="custom"/>
+		
+		<p> use this <a href="https://sites.google.com/site/gdocs2direct/">website</a> to create a direct download link to an mp3 you have in Google Drive.<br>Alternatively, you can paste a youtube link, but the timing may be slightly off. For youtube, you can use either the link in the address bar or the share button, but DO NOT ALTER THE LINK AND DO NOT ADD A START TIME TO THE LINK</p>
+		<label for="txtCustom">Custom song link:</label>
+		<input type="text" name="customLink" id="customLink"/>
+		
+		<label for="timestamp"><br>Timestamp to allign to (Only for custom songs):</label>
+		<input type="text" name="txtTimestamp" id="timestamp" value=""/>
+		
+		<br><br><button onClick="runCountdown()">Start</button>
 		<p>Tip: don't press start until the countdown changes to the desired second(aka don't try to click early to get it right on the second)</p>
 		<br><h3 id="testOutput"></h3>
 			
+		<!--This frame will contain the embedded youtube video if they choose to use a youtube link-->
+		<iframe id="youtubeFrame" width="1" height="1" src="https://www.youtube.com/embed/ov5qRvWCavg?start=2&autoplay=1" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen ></iframe>
+			
 		<script>
+			var youtube = false;
+			
 			function runCountdown() {
 				// convert given times to seconds
 				var remaining = document.getElementById("remaining").value;
-				//var timestamp = document.getElementById("timestamp").value;
+				var timestamp = document.getElementById("timestamp").value;
 				//document.getElementById("testOutput").innerHTML = remaining;
 				
 				var remainingSec = calculateSeconds(remaining, "remaining");
@@ -51,6 +68,15 @@
 				
 				if (document.getElementById("dramaticCheck").checked) {
 					var timestampSec = 100;
+				} else if(document.getElementById("customCheck").checked){
+					
+					if (document.getElementById("customLink").value.includes("youtu")) {
+						document.getElementById("testOutput").innerHTML = "dogs";
+						youtube = true;
+					} else {
+						document.getElementById("custom").src = document.getElementById("customLink").value;
+					}
+					var timestampSec = calculateSeconds(timestamp, "timestamp");
 				} else {
 					var timestampSec = 226;	
 				}
@@ -90,12 +116,24 @@
 					var waitTime = (timeRemaining - timestamp) * 1000 - 500;
 					document.getElementById("testOutput").innerHTML = "Waiting " + waitTime / 1000 + " seconds to start.";
 					setTimeout(function() {
-						playMusic(0);
+						if(!youtube) {
+							playMusic(0);
+						} else {
+							//document.getElementById("testOutput").innerHTML = "test";
+							var url = formatUrl(2);
+							document.getElementById("testOutput").innerHTML = "Now Playing";
+							document.getElementById("youtubeFrame").src = url;
+						}
 					}, waitTime);
 				} else {
 					var startTime = timestamp - timeRemaining;
-					document.getElementById("testOutput").innerHTML = startTime;
-					playMusic(startTime + .5);
+					if(!youtube) {
+						document.getElementById("testOutput").innerHTML = startTime;
+						playMusic(startTime + .5);
+					} else {
+						document.getElementById("testOutput").innerHTML = "Now Playing";
+						document.getElementById("youtubeFrame").src = formatUrl(startTime + 2);
+					}
 				}
 			}
 			
@@ -103,11 +141,36 @@
 				document.getElementById("testOutput").innerHTML = "Now Playing";
 				if (document.getElementById("dramaticCheck").checked) {
 					var song = document.getElementById("dramatic");
-				} else {
+				} else if (document.getElementById("customCheck").checked) {
+					var song = document.getElementById("custom");
+				}else {
 					var song = document.getElementById("song");
 				}
 				song.currentTime = startTime;
 				song.play();
+			}
+			
+			
+			function formatUrl(startTime) {
+				var url = document.getElementById("customLink").value;
+				//document.getElementById("testOutput").innerHTML = url;
+				if(url.includes("https://")) {
+					url = url.replace("https://", "");
+				}
+				
+				if(url.includes("youtu.be")) {
+					url = url.replace("youtu.be", "www.youtube.com");
+				} 
+				
+				if (url.includes("watch?v=")) {
+					url = url.replace("watch?v=", "");
+				}
+				var split = url.indexOf("/")
+				url = "https://" + url.substring(0, split) + "/embed/" + url.substring(split + 1, url.lenght);
+				var end = "?start=" + startTime + "&autoplay=1";
+				url = url.concat(end);
+				
+				return url;
 			}
 			
 		</script>
