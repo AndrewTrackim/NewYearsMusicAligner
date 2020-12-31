@@ -49,9 +49,9 @@
 				<div class="col" style="background-color: lightblue">
 					<h3 style="text-align: center;">Add Your Own Song</h3>
 		
-					<p> Use this <a href="https://sites.google.com/site/gdocs2direct/">website</a> to create a direct download link to an mp3 you have in Google Drive.<br>Alternatively, you can paste a youtube link, but the timing may be slightly off. For youtube, you can use either the link in the address bar or the share button, but <a style="color: red">DO NOT ALTER THE LINK AND DO NOT ADD A START TIME TO THE LINK</a></p> <!-- I don't think an a tag was proper syntax but it 																											works lol -->
+					<p> Use this <a href="https://sites.google.com/site/gdocs2direct/">website</a> to create a direct download link to an mp3 you have in Google Drive.<br>You can also paste a youtube link, but the timing may be slightly off. <a style="color: red">DO NOT ALTER THE YOUTUBE LINK AND DO NOT ADD A START TIME TO THE LINK. YOUTUBE VIDEOS ONLY WORK ON THE DESKTOP VERSION OF THE SITE</a></p> <!-- I don't think an a tag was proper syntax but it 																											works lol -->
 					<label for="txtCustom">Custom song link:</label>
-					<input type="text" size="50" name="customLink" id="customLink"/>
+					<input type="text" size="30" name="customLink" id="customLink"/>
 					
 					<label for="remaining">Time Remaining (MM:SS OR SSS):</label>
 					<input value="4:00" type="text" size="4" name="txtTimeRemainingCustom" id="remainingCustom"/>
@@ -74,8 +74,13 @@
 		<script>
 			var youtube = false;
 			var customLink = false;
+			var lastSong;
+			var usingPlayer;
+			var running = false;
+			var cancelled = false;
 			
 			function runMusic(link) {
+				reset();
 				customLink = link;
 				// convert given times to seconds
 				var remaining = 0;
@@ -163,16 +168,20 @@
 			}
 			
 			function playMusic(startTime) {
-				document.getElementById("testOutput").innerHTML = "Now Playing";
-				if (document.getElementById("dramaticCheck").checked) {
-					var song = document.getElementById("dramatic");
-				} else if (customLink) {
-					var song = document.getElementById("custom");
-				}else {
-					var song = document.getElementById("song");
-				}
+				if (!cancelled) {
+					document.getElementById("testOutput").innerHTML = "Now Playing";
+					if (document.getElementById("dramaticCheck").checked) {
+						var song = document.getElementById("dramatic");
+					} else if (customLink) {
+						var song = document.getElementById("custom");
+					}else {
+						var song = document.getElementById("song");
+					}
 				song.currentTime = startTime;
+				lastSong = song;
+				usingPlayer = true;
 				song.play();
+				}
 			}
 			
 			
@@ -190,16 +199,30 @@
 				if (url.includes("watch?v=")) {
 					url = url.replace("watch?v=", "");
 				}
-				var split = url.indexOf("/")
+				var split = url.indexOf("/");
 				url = "https://" + url.substring(0, split) + "/embed/" + url.substring(split + 1, url.lenght);
 				var end = "?start=" + startTime + "&autoplay=1";
 				url = url.concat(end);
-				
+				usingPlayer = false;
 				return url;
+			}
+			
+			function reset() {
+				if (usingPlayer) {
+					lastSong.currentTime = 0;
+					lastSong.pause();
+				} else {
+					document.getElementById("youtubeFrame").src = "";
+				}
+				
+				youtube = false;
+				customLink = false;
+				lastSong = null;
+				usingPlayer = null;
+				running = false;
 			}
 			
 		</script>
 		</div>
-		
 	</body>
 </html>
