@@ -49,7 +49,10 @@
 				<div class="col" style="background-color: lightblue">
 					<h3 style="text-align: center;">Add Your Own Song</h3>
 		
-					<p> Use this <a href="https://sites.google.com/site/gdocs2direct/">website</a> to create a direct download link to an mp3 you have in Google Drive.<br>You can also paste a youtube link, but the timing may be slightly off. <a style="color: red">DO NOT ALTER THE YOUTUBE LINK AND DO NOT ADD A START TIME TO THE LINK. YOUTUBE VIDEOS ONLY WORK ON THE DESKTOP VERSION OF THE SITE</a></p> <!-- I don't think an a tag was proper syntax but it 																											works lol -->
+					<p> Use this <a href="https://sites.google.com/site/gdocs2direct/">website</a> to create a direct download link to an mp3 you have in Google Drive.<br>You can also paste a youtube link, but the timing may be slightly off. <a style="color: red">DO NOT ALTER THE YOUTUBE LINK AND DO NOT ADD A START TIME TO THE LINK. YOUTUBE VIDEOS ONLY WORK ON THE DESKTOP VERSION OF THE SITE</a> Note: some YouTube links won't work because of copyright so test it first, and if it doesn't work, try again after checking the box below.</p> <!-- I don't think an a tag was proper syntax but it works lol -->
+					
+					<label for="copyrightCheck">Check if Youtube link doesn't work:</label>
+					<input type="checkbox" name="checkCopyright" id="copyrightCheck" value="copyright"/><br>
 					<label for="txtCustom">Custom song link:</label>
 					<input type="text" size="30" name="customLink" id="customLink"/>
 					
@@ -68,8 +71,9 @@
 				</div>
 			</div>
 		
-			<!--This frame will contain the embedded youtube video if they choose to use a youtube link-->
+		<!--This frame will contain the embedded youtube video if they choose to use a youtube link-->
 		<iframe id="youtubeFrame" width="1" height="1" src="https://www.youtube.com/embed/ov5qRvWCavg?start=2&autoplay=1" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen ></iframe>
+		
 			
 		<script>
 			var youtube = false;
@@ -148,6 +152,8 @@
 					setTimeout(function() {
 						if(!youtube) {
 							playMusic(0);
+						} else if(document.getElementById("copyrightCheck").checked){
+							window.open(formatWindow(3), "_blank");
 						} else {
 							//document.getElementById("testOutput").innerHTML = "test";
 							var url = formatUrl(2);
@@ -158,9 +164,11 @@
 				} else {
 					var startTime = timestamp - timeRemaining;
 					if(!youtube) {
-						document.getElementById("testOutput").innerHTML = startTime;
 						playMusic(startTime + .5);
-					} else {
+					} else if(document.getElementById("copyrightCheck").checked){
+						url = 
+						window.open(formatWindow(startTime + 3), "_blank");
+					} else { 
 						document.getElementById("testOutput").innerHTML = "Now Playing";
 						document.getElementById("youtubeFrame").src = formatUrl(startTime + 2);
 					}
@@ -203,7 +211,26 @@
 				url = "https://" + url.substring(0, split) + "/embed/" + url.substring(split + 1, url.lenght);
 				var end = "?start=" + startTime + "&autoplay=1";
 				url = url.concat(end);
-				usingPlayer = false;
+	
+				return url;
+			}
+			
+			function formatWindow(startTime) {
+				var url = document.getElementById("customLink").value;
+				
+				if(url.includes("www.youtube.com")) {
+					url = url.replace("www.youtube.com", "youtu.be");
+				} 
+				if(url.includes("youtube.com")) {
+					url = url.replace("youtube.com", "youtu.be");
+				} 
+				
+				if (url.includes("watch?v=")) {
+					url = url.replace("watch?v=", "");
+				}
+				
+				url = url.concat("?t=" + startTime);
+				
 				return url;
 			}
 			
