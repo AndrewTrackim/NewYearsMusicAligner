@@ -1,11 +1,18 @@
 <!doctype html>
 <html>
 	<head>
+		<!--required meta tags -->
 		<meta charset="utf-8">
-		<title>New Years Giorno's Theme</title>
+		<meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+		
+		<!-- bootstrap CSS -->
+		<link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.1.3/css/bootstrap.min.css" integrity="sha384-MCw98/SFnGE8fJT3GXwEOngsV7Zt27NXFoaoApmYm81iuXoPkFOJwJ8ERdknLPMO" crossorigin="anonymous">
+		
+		<title>New Years Song Alligner</title>
 	</head>
 	
 	<body>
+		<!-- this is just where I define all the audio files for later -->
 		<div class="audio">
 			<audio id="song">
 				<source src="https://drive.google.com/uc?export=download&id=1wEYlJxGe370NlhQhvQmviUVSVsOGi8NM" type="audio/ogg">
@@ -18,67 +25,85 @@
 			</audio>
 			
 		</div>
+		<div class="container">
+			<div class= "row"> 
+				<div class="col">
+					<br><h1 style="text-align: center;">New Years Song Alligner</h1><br>
+					<p style="text-align: center;">This website allows you to allign songs with the new years countdown just like you've seen in the memes!</p><br>
+	
+					<!-- <marquee scrollamount="20">This is here because every crappy website needs scrolling text at some point.</marquee> -->
+				</div>
+			</div>
 		
-		<div class= "introduction"> 
-		<h1>New Years Giorno's Theme Alligner</h1>
-		<br>
-		
-		<p> This website will allow you to allign the epic part of Giorno's theme with new years without the stress of figuring out when to press play!<br> all you need to do is enter the time left in the countdown and then enter the timestamp in the song that should be alligned. It's that simple!<br>I understand this website is ugly as fudge but I'm lazy and don't feel like relearining css and html styling. It functions, isn't that good enough for you?! ... geez</p>
+			<div class="row">
+				<div class="col" style="background-color: #fccd92">
+					<h3 style="text-align: center;">Use Default Giorno's Theme</h3>
+					<p>If you want to use the built in Giorno's theme, just enter the time remaining in the countdown and press start!</p>
+					<label for="dramaticCheck">Use dramatic version</label>
+					<input type="checkbox" name="checkDramatic" id="dramaticCheck" value="dramatic"/><br>
+					<label for="remaining">Time Remaining (MM:SS OR SSS):</label>
+					<input value="4:00" type="text" size="4" name="txtTimeRemaining" id="remaining"/>
+					<p style="text-align: center;"><br><button onClick="runMusic(false)">Start</button></p>
+				</div>
 			
-		<br>
-			<marquee scrollamount="20">This is here because every crappy website needs scrolling text at some point.</marquee>
-		</div>
+				<div class="col" style="background-color: lightblue">
+					<h3 style="text-align: center;">Add Your Own Song</h3>
 		
-		<div class="userInput">
-		<label for="dramaticCheck">Use dramatic version</label>
-		<input type="checkbox" name="checkDramatic" id="dramaticCheck" value="dramatic"/>
-		<label for="remaining"><br>Time Remaining (MM:SS OR SSS):</label>
-		<input value="4:00" type="text" name="txtTimeRemaining" id="remaining"/>
-			
-		<!-- <br>-->
-		<h3>Add your own song!</h3>
-		<label for="customCheck">Use custom song</label>
-		<input type="checkbox" name="checkCustom" id="customCheck" value="custom"/>
+					<p> Use this <a href="https://sites.google.com/site/gdocs2direct/">website</a> to create a direct download link to an mp3 you have in Google Drive.<br>Alternatively, you can paste a youtube link, but the timing may be slightly off. For youtube, you can use either the link in the address bar or the share button, but <a style="color: red">DO NOT ALTER THE LINK AND DO NOT ADD A START TIME TO THE LINK</a></p> <!-- I don't think an a tag was proper syntax but it 																											works lol -->
+					<label for="txtCustom">Custom song link:</label>
+					<input type="text" size="50" name="customLink" id="customLink"/>
+					
+					<label for="remaining">Time Remaining (MM:SS OR SSS):</label>
+					<input value="4:00" type="text" size="4" name="txtTimeRemainingCustom" id="remainingCustom"/>
 		
-		<p> use this <a href="https://sites.google.com/site/gdocs2direct/">website</a> to create a direct download link to an mp3 you have in Google Drive.<br>Alternatively, you can paste a youtube link, but the timing may be slightly off. For youtube, you can use either the link in the address bar or the share button, but DO NOT ALTER THE LINK AND DO NOT ADD A START TIME TO THE LINK</p>
-		<label for="txtCustom">Custom song link:</label>
-		<input type="text" name="customLink" id="customLink"/>
+					<br><label for="timestamp">Timestamp to allign to:</label>
+					<input type="text" size="4" name="txtTimestamp" id="timestamp" value=""/>
+					<p style="text-align: center;"><br><button onClick="runMusic(true)">Start</button></p>
+				 </div>
+			</div>
+			<div class="row">
+				<div class="col">
+					<p style="text-align: center;">Tip: don't press start until the countdown changes to the desired second(aka don't try to click early to get it right on the second)</p>
+					<br><h3 id="testOutput" style="text-align: center"></h3>
+				</div>
+			</div>
 		
-		<label for="timestamp"><br>Timestamp to allign to (Only for custom songs):</label>
-		<input type="text" name="txtTimestamp" id="timestamp" value=""/>
-		
-		<br><br><button onClick="runCountdown()">Start</button>
-		<p>Tip: don't press start until the countdown changes to the desired second(aka don't try to click early to get it right on the second)</p>
-		<br><h3 id="testOutput"></h3>
-			
-		<!--This frame will contain the embedded youtube video if they choose to use a youtube link-->
+			<!--This frame will contain the embedded youtube video if they choose to use a youtube link-->
 		<iframe id="youtubeFrame" width="1" height="1" src="https://www.youtube.com/embed/ov5qRvWCavg?start=2&autoplay=1" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen ></iframe>
 			
 		<script>
 			var youtube = false;
+			var customLink = false;
 			
-			function runCountdown() {
+			function runMusic(link) {
+				customLink = link;
 				// convert given times to seconds
-				var remaining = document.getElementById("remaining").value;
+				var remaining = 0;
 				var timestamp = document.getElementById("timestamp").value;
-				//document.getElementById("testOutput").innerHTML = remaining;
 				
-				var remainingSec = calculateSeconds(remaining, "remaining");
+				var remainingSec = 0;
+				//document.getElementById("testOutput").innerHTML = remaining;
+				if (customLink) {
+					remaining = document.getElementById("remainingCustom").value;
+					remainingSec = calculateSeconds(remaining, "remainingCustom");
+				} else {
+					remaining = document.getElementById("remaining").value;
+					remainingSec = calculateSeconds(remaining, "remaining");
+				}
 				//var timestampSec = calculateSeconds(timestamp, "timestamp");
 				
 				if (document.getElementById("dramaticCheck").checked) {
 					var timestampSec = 100;
-				} else if(document.getElementById("customCheck").checked){
-					
+				} else if(customLink){
 					if (document.getElementById("customLink").value.includes("youtu")) {
-						document.getElementById("testOutput").innerHTML = "dogs";
+						//document.getElementById("testOutput").innerHTML = "dogs";
 						youtube = true;
 					} else {
 						document.getElementById("custom").src = document.getElementById("customLink").value;
 					}
 					var timestampSec = calculateSeconds(timestamp, "timestamp");
 				} else {
-					var timestampSec = 226;	
+					var timestampSec = 226;
 				}
 				
 				//do the thing
@@ -141,7 +166,7 @@
 				document.getElementById("testOutput").innerHTML = "Now Playing";
 				if (document.getElementById("dramaticCheck").checked) {
 					var song = document.getElementById("dramatic");
-				} else if (document.getElementById("customCheck").checked) {
+				} else if (customLink) {
 					var song = document.getElementById("custom");
 				}else {
 					var song = document.getElementById("song");
