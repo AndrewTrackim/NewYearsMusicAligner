@@ -209,7 +209,7 @@
 				}
 				var split = url.indexOf("/");
 				url = "https://" + url.substring(0, split) + "/embed/" + url.substring(split + 1, url.lenght);
-				var end = "?start=" + startTime + "&autoplay=1";
+				var end = "?start=" + startTime + + "&playsinline=1&enablejsapi=1" + "&autoplay=1";
 				url = url.concat(end);
 	
 				return url;
