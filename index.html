@@ -127,8 +127,6 @@
         if (strTime == "") {
           var today = new Date();
           var seconds_left = 86400 - (today.getHours() * 60 * 60) - (today.getMinutes() * 60) - today.getSeconds();
-          window.alert(String(today.getHours()) + ":" + String(today.getMinutes()) + ":" + String(today.getSeconds()));
-          window.alert(seconds_left);
           return seconds_left
         }
 
